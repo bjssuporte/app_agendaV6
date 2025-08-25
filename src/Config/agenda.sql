@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 22/08/2025 às 00:02
+-- Tempo de geração: 25/08/2025 às 07:16
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -87,6 +87,23 @@ INSERT INTO `disponibilidade` (`id`, `profissionalId`, `profissionalNome`, `id_s
 -- --------------------------------------------------------
 
 --
+-- Estrutura para tabela `grupos`
+--
+
+CREATE TABLE `grupos` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `descricao` text DEFAULT NULL,
+  `telefone` varchar(50) DEFAULT NULL,
+  `logo_url` varchar(255) DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura para tabela `profissionais`
 --
 
@@ -94,17 +111,18 @@ CREATE TABLE `profissionais` (
   `id` int(11) NOT NULL,
   `nome` varchar(255) NOT NULL,
   `email` varchar(255) DEFAULT NULL,
-  `telefone` varchar(20) DEFAULT NULL
+  `telefone` varchar(20) DEFAULT NULL,
+  `grupo_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Despejando dados para a tabela `profissionais`
 --
 
-INSERT INTO `profissionais` (`id`, `nome`, `email`, `telefone`) VALUES
-(1, 'Carlos Machado', 'carlosmteste@mail.com', '81 99880 0000'),
-(2, 'Tatiana Brito', 'tatianeb@mail.com', '81 99000 5555'),
-(3, 'Pamela Almeida', 'pamela@mail.com', '81 98833 6644');
+INSERT INTO `profissionais` (`id`, `nome`, `email`, `telefone`, `grupo_id`) VALUES
+(1, 'Carlos Machado', 'carlosmteste@mail.com', '81 99880 0000', NULL),
+(2, 'Tatiana Brito', 'tatianeb@mail.com', '81 99000 5555', NULL),
+(3, 'Pamela Almeida', 'pamela@mail.com', '81 98833 6644', NULL);
 
 -- --------------------------------------------------------
 
@@ -172,6 +190,17 @@ INSERT INTO `users` (`id`, `name`, `email`, `created_at`) VALUES
 (2, 'Grace Hopper', 'grace.hopper@example.com', '2025-08-18 19:48:03'),
 (3, 'Margaret Hamilton', 'margaret.hamilton@example.com', '2025-08-18 19:48:03');
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `usuario_grupo`
+--
+
+CREATE TABLE `usuario_grupo` (
+  `usuario_id` int(11) NOT NULL,
+  `grupo_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Índices para tabelas despejadas
 --
@@ -194,11 +223,19 @@ ALTER TABLE `disponibilidade`
   ADD KEY `idx_id_servico_disp` (`id_servico`);
 
 --
+-- Índices de tabela `grupos`
+--
+ALTER TABLE `grupos`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `slug` (`slug`);
+
+--
 -- Índices de tabela `profissionais`
 --
 ALTER TABLE `profissionais`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `fk_profissionais_grupo` (`grupo_id`);
 
 --
 -- Índices de tabela `profissional_servicos`
@@ -220,6 +257,13 @@ ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Índices de tabela `usuario_grupo`
+--
+ALTER TABLE `usuario_grupo`
+  ADD PRIMARY KEY (`usuario_id`,`grupo_id`),
+  ADD KEY `fk_ug_grupo` (`grupo_id`);
+
+--
 -- AUTO_INCREMENT para tabelas despejadas
 --
 
@@ -234,6 +278,12 @@ ALTER TABLE `agendamentos`
 --
 ALTER TABLE `disponibilidade`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT de tabela `grupos`
+--
+ALTER TABLE `grupos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `profissionais`
@@ -272,11 +322,24 @@ ALTER TABLE `disponibilidade`
   ADD CONSTRAINT `fk_disp_servico` FOREIGN KEY (`id_servico`) REFERENCES `servicos` (`id`);
 
 --
+-- Restrições para tabelas `profissionais`
+--
+ALTER TABLE `profissionais`
+  ADD CONSTRAINT `fk_profissionais_grupo` FOREIGN KEY (`grupo_id`) REFERENCES `grupos` (`id`) ON DELETE SET NULL;
+
+--
 -- Restrições para tabelas `profissional_servicos`
 --
 ALTER TABLE `profissional_servicos`
   ADD CONSTRAINT `fk_ps_profissional` FOREIGN KEY (`id_profissional`) REFERENCES `profissionais` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_ps_servico` FOREIGN KEY (`id_servico`) REFERENCES `servicos` (`id`) ON DELETE CASCADE;
+
+--
+-- Restrições para tabelas `usuario_grupo`
+--
+ALTER TABLE `usuario_grupo`
+  ADD CONSTRAINT `fk_ug_grupo` FOREIGN KEY (`grupo_id`) REFERENCES `grupos` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_ug_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
