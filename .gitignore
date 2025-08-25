@@ -1,5 +1,12 @@
-Config
-Database
-.env
-.composer
+    # Ignore .env files
+    .env
+    .env.*
 
+    # Ignore virtual environments
+    venv/
+    .venv/
+
+    # Ignore common development files
+    *.log
+    *.tmp
+    node_modules/
