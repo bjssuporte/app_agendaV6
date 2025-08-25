@@ -1,0 +1,21 @@
+       body {
+           font-family: 'Inter', sans-serif;
+           background-color: #f7fafc;
+       }
+
+       .calendar-day.disabled {
+           background-color: #f1f5f9;
+           color: #9ca3af;
+           cursor: not-allowed;
+       }
+
+       .calendar-day.available {
+           background-color: #dbeafe;
+           color: #1e40af;
+           font-weight: bold;
+       }
+
+       .calendar-day.selected {
+           background-color: #4f46e5;
+           color: white;
+       }

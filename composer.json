@@ -1,0 +1,19 @@
+{
+    "name": "bruno/app_testev1",
+    "description": "Descrição do seu projeto.",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Seu Nome",
+            "email": "seu@email.com"
+        }
+    ],
+    "require": {
+        "phpmailer/phpmailer": "^6.10",
+        "vlucas/phpdotenv": "^5.6"
+    }
+}
